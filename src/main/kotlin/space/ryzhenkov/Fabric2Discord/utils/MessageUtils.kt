@@ -5,24 +5,24 @@ import discord4j.core.`object`.entity.User
 import discord4j.core.spec.EmbedCreateSpec
 import discord4j.discordjson.json.EmbedData
 import discord4j.rest.util.Color
-import eu.pb4.placeholders.PlaceholderAPI
+import eu.pb4.placeholders.PlaceholderAPI.parseText
+import eu.pb4.placeholders.PlaceholderContext
 import eu.pb4.placeholders.TextParser
+import eu.pb4.placeholders.util.TextParserUtils
 import net.minecraft.network.MessageType
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.PlayerManager
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
-import space.ryzhenkov.Fabric2Discord.ClientInstance.client
-import space.ryzhenkov.Fabric2Discord.ConfigInstance
+import space.ryzhenkov.Fabric2Discord.F2DClient.client
+import space.ryzhenkov.Fabric2Discord.config.F2DConfig
+import space.ryzhenkov.Fabric2Discord.config.IConfigEmbedMessage
 import java.time.Instant
 import java.util.*
 
 
 object MessageUtils {
-    private var ALLOWED_TAGS_NAMES = arrayOf("obf", "bold", "underline", "strikethrough", "italic")
-    var ALLOWED_TAGS = TextParser.getRegisteredSafeTags().filter { item ->
-        ALLOWED_TAGS_NAMES.contains(item.key)
-    }
+    var ALLOWED_TAGS = arrayOf("obf", "bold", "underline", "strikethrough", "italic")
     
     fun sendEmbedMessage(channel: Snowflake?, embed: EmbedData) {
         if (channel == null) return
@@ -31,10 +31,10 @@ object MessageUtils {
     
     fun sendMinecraftMessage(playerManager: PlayerManager, user: User, message: Text) {
         val formattedMessage = format(
-            ConfigInstance.messages.format.replace("%discord_user%", user.username).replace("%discord_tag%", user.discriminator), playerManager.server
-        ).shallowCopy().append(message)
+            F2DConfig.messages.format.replace("%discord_user%", user.username).replace("%discord_tag%", user.discriminator), playerManager.server
+        ).copy().append(message)
     
-        playerManager.broadcast(formattedMessage, MessageType.CHAT, UUID.nameUUIDFromBytes(user.id.asBigInteger().toByteArray()))
+        playerManager.broadcast(formattedMessage, MessageType.CHAT, UUID.nameUUIDFromBytes(user.discriminator.toByteArray()))
     }
     
     // TODO: Rework this function for a better performance.
@@ -56,20 +56,20 @@ object MessageUtils {
     
     fun format(message: String, server: MinecraftServer? = null, player: ServerPlayerEntity? = null, customReplacements: HashMap<String, String>? = null): Text {
         val finalMessage = replacer(message, customReplacements)
-        if (player != null) return PlaceholderAPI.parseText(TextParser.parse(finalMessage), player)
-        if (server != null) return PlaceholderAPI.parseText(TextParser.parse(finalMessage), server)
+        if (player != null) return parseText(TextParser.parse(finalMessage), player)
+        if (server != null) return parseText(TextParser.parse(finalMessage), server)
         return TextParser.parse(finalMessage)
     }
     
     fun format(message: String, server: MinecraftServer?, customReplacements: HashMap<String, String>? = null): Text {
         val finalMessage = replacer(message, customReplacements)
-        if (server != null) return PlaceholderAPI.parseText(TextParser.parse(finalMessage), server)
+        if (server != null) return parseText(TextParser.parse(finalMessage), server)
         return TextParser.parse(finalMessage)
     }
     
     fun format(message: String, player: ServerPlayerEntity?, customReplacements: HashMap<String, String>? = null): Text {
         val finalMessage = replacer(message, customReplacements)
-        if (player != null) return PlaceholderAPI.parseText(TextParser.parse(finalMessage), player)
+        if (player != null) return parseText(TextParser.parse(finalMessage), player)
         return TextParser.parse(finalMessage)
     }
     

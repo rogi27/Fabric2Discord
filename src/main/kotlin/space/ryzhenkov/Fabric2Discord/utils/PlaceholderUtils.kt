@@ -5,7 +5,7 @@ import eu.pb4.placeholders.PlaceholderResult
 import net.minecraft.util.Identifier
 
 
-object ModPlaceholders {
+object PlaceholderUtils {
     fun init() {
         PlaceholderAPI.register(Identifier("player", "uuid")) { handler ->
             if (handler.hasPlayer()) {

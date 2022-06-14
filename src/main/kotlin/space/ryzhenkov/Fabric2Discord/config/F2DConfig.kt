@@ -1,4 +1,4 @@
-package space.ryzhenkov.Fabric2Discord
+package space.ryzhenkov.Fabric2Discord.config
 
 import discord4j.common.util.Snowflake
 import me.lortseam.completeconfig.api.ConfigContainer
@@ -6,9 +6,8 @@ import me.lortseam.completeconfig.api.ConfigContainer.Transitive
 import me.lortseam.completeconfig.api.ConfigEntries
 import me.lortseam.completeconfig.api.ConfigEntry
 import me.lortseam.completeconfig.api.ConfigGroup
-import space.ryzhenkov.Fabric2Discord.utils.IConfigEmbedMessage
 
-object ConfigInstance:ConfigContainer {
+object F2DConfig:ConfigContainer {
     @Transitive
     object general:ConfigGroup {
         @Override

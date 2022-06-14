@@ -7,12 +7,13 @@ import discord4j.core.event.domain.message.MessageCreateEvent
 import discord4j.core.`object`.entity.User
 import eu.pb4.placeholders.TextParser
 import net.minecraft.server.MinecraftServer
+import space.ryzhenkov.Fabric2Discord.config.F2DConfig
 import space.ryzhenkov.Fabric2Discord.utils.MessageUtils
 
 
-object ClientInstance {
+object F2DClient {
     
-    var client: DiscordClient = DiscordClient.create(ConfigInstance.general.token)
+    var client: DiscordClient = DiscordClient.create(F2DConfig.general.token)
     var loggedClient: GatewayDiscordClient? = client.login().block()
     var minecraftServer: MinecraftServer? = null
     
@@ -31,11 +32,12 @@ object ClientInstance {
             
             val author = event.message.author.get()
             if (event.message.content.isNotEmpty()) {
-                MessageUtils.sendMinecraftMessage(minecraftServer!!.playerManager, author, TextParser.parse(MessageUtils.convertDiscordTags(event.message.content), MessageUtils.ALLOWED_TAGS))
+                // TODO: Find workaround to remove some Placeholder API placeholders
+                MessageUtils.sendMinecraftMessage(minecraftServer!!.playerManager, author, TextParser.parseSafe(MessageUtils.convertDiscordTags(event.message.content)))
             }
             if (event.message.attachments.isNotEmpty()) {
-                MessageUtils.sendMinecraftMessage(minecraftServer!!.playerManager, author, TextParser.parse(event.message.attachments.joinToString { attachment ->
-                    ConfigInstance.messages.formattedAttachment.replace("%attachment_url%", attachment.url).replace("%attachment_name%", if (attachment.filename.length > 14) "${attachment.filename.substring(0, 14)}..." else attachment.filename)
+                MessageUtils.sendMinecraftMessage(minecraftServer!!.playerManager, author, TextParser.parseSafe(event.message.attachments.joinToString { attachment ->
+                    F2DConfig.messages.formattedAttachment.replace("%attachment_url%", attachment.url).replace("%attachment_name%", if (attachment.filename.length > 14) "${attachment.filename.substring(0, 14)}..." else attachment.filename)
                 }))
             }
         }

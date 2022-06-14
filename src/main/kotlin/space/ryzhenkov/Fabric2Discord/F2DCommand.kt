@@ -9,7 +9,7 @@ import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Style
 import net.minecraft.text.Text
 
-object ModCommands {
+object F2DCommand {
     fun init() {
         CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher, _ ->
             dispatcher.register(CommandManager.literal("f2d").requires { server -> server.hasPermissionLevel(4) }.then(CommandManager.literal("reload").executes { context: CommandContext<ServerCommandSource> ->
